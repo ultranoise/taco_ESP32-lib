@@ -148,25 +148,33 @@ Documentation (check the rest of Taco.h):
   void beginServer(WebServer& s);
 
   * /*Callback function to deal with clients asking the server
+  
   Example:
+  
     WebServer server(80);
+    
     void setup(){
+    
       ...
+      
       server.on("/", handleRoot);
+      
       taco.beginServer(server);
+      
       ...
+      
     }
+    
     void handleRoot() {
+    
       taco.handleRoot(server);
+      
     }
+    
   */
+  
   
   void handleRoot(WebServer& s);
 
 
-HMTL Server aspect:
-
-* In Access Point mode (connect to 192.168.0.1)
-
-* Connected to an existing Wifi (IP could be 192.168.0.129 but it depends on your network)
 
