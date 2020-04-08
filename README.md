@@ -78,10 +78,10 @@ Documentation (check the rest of Taco.h):
   
   void configureWifi(String net, String pass);
 
-  /* Transmit OSC data - a simple float value */
+  * /* Transmit OSC data - a simple float value */
   void send(OSCMessage& msg, float value);
 
-  /* Transmit OSC data - an array of float values. You need to specify its size */
+  * /* Transmit OSC data - an array of float values. You need to specify its size */
   void send(OSCMessage& msg, float *arr, int size);
 
   /* Define a list of digital pins to read. It is necessary to define the size if the array with n_pins.
