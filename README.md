@@ -79,60 +79,75 @@ Documentation (check the rest of Taco.h):
   void configureWifi(String net, String pass);
 
   * /* Transmit OSC data - a simple float value */
+  
   void send(OSCMessage& msg, float value);
 
   * /* Transmit OSC data - an array of float values. You need to specify its size */
+  
   void send(OSCMessage& msg, float *arr, int size);
 
-  /* Define a list of digital pins to read. It is necessary to define the size if the array with n_pins.
+  * /* Define a list of digital pins to read. It is necessary to define the size if the array with n_pins.
   Example:
     int digital_pins[] = {16, 18, 20, 22};
     ... setup() {
     ...   taco.def_digital_pins(digital_pins, 4);
     ....} */
+  
   void def_digital_pins(int digital_pins[], int n_pins);
 
-  /* Define a list of analog pins to read. It is necessary to define the size if the array with n_pins.
+  * /* Define a list of analog pins to read. It is necessary to define the size if the array with n_pins.
+  
   Example:
   int analog_pins[] = {35, 34, 33};
     ... setup() {
     ...   taco.def_analog_pins(analog_pins, 3);
     ....} */    
+  
   void def_analog_pins(int analog_pins[], int n_pins);
 
-  /* Read both lists of analog and digital pins. You should program something inside */
+  * /* Read both lists of analog and digital pins. You should program something inside */
+  
   void readPins();
 
-  //OLED display functions
+  * //OLED display functions
   /*Constructor needs to get a reference of the actual display*/
+  
   void createSSD1306(Adafruit_SSD1306& ssd1306);
 
-  /*Write a text at x,y coordinates in pixels*/
+  * /*Write a text at x,y coordinates in pixels*/
+  
   void SSD1306_write(int x, int y, const char* text);
 
-  /*Write an int at x,y coordinates in pixels*/
+  * /*Write an int at x,y coordinates in pixels*/
+  
   void SSD1306_writeInt(int x, int y, int value);
 
-  /*Clear Display*/
+  * /*Clear Display*/
+  
   void SSD1306_clear();
 
-  /*Show a small animation of pixels*/
+  * /*Show a small animation of pixels*/
+  
   void SSD1306_stars();
 
-  /*Display the value of an analog pin on the display*/
+  * /*Display the value of an analog pin on the display*/
+  
   void SSD1306_analog_monitor(int pin);
 
-  /*Display the value of digital pin on the display*/
+  * /*Display the value of digital pin on the display*/
+  
   void SSD1306_digital_monitor(int pin);
 
-  /*Inform if the user has created an OLED object or not*/
+  * /*Inform if the user has created an OLED object or not*/
+  
   bool hasOled();
 
-  //SERVER FUNCTIONS
+  * //SERVER FUNCTIONS
   /*Begin a server to configure the board. Receive a reference*/
+  
   void beginServer(WebServer& s);
 
-  /*Callback function to deal with clients asking the server
+  * /*Callback function to deal with clients asking the server
   Example:
     WebServer server(80);
     void setup(){
@@ -145,7 +160,9 @@ Documentation (check the rest of Taco.h):
       taco.handleRoot(server);
     }
   */
+  
   void handleRoot(WebServer& s);
+
 
 HMTL Server aspect:
 
