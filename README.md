@@ -27,9 +27,11 @@ Dependencies:
 
 * <Adafruit_SSD1306.h>
 
-Download version 0.1: taco.zip
+Download version 0.1: download or clone the contents of these repo.
+
 
 Install: Move the folder “Taco” and all its contents to your Arduino libraries folder. Check the included examples.
+
 
 Documentation (check the rest of Taco.h):
 
@@ -37,13 +39,16 @@ Documentation (check the rest of Taco.h):
   
   Taco(int ledPin, int hardResetPin);
 
-  /* Constructor with onboard led pin, hardreset pin and access point name */
+  * /* Constructor with onboard led pin, hardreset pin and access point name */
+  
   Taco(int ledPin, int hardResetPin, const char *AP_name);
 
-  /* Begin all necessary stuff (eeprom, hardreset checks, saved informations, network) */
+  * /* Begin all necessary stuff (eeprom, hardreset checks, saved informations, network) */
+  
   bool begin(int udpPort);
 
-  /* Update board status */
+  * /* Update board status */
+  
   void update();
 
   /* Callback function to manage and capture changes in the network (connection status, ips, connected devices, etc).
@@ -65,10 +70,12 @@ Documentation (check the rest of Taco.h):
     Serial.printf("**** kike: [WiFi-event] event: %d\n", event);
     taco.manageWiFiEvent(event);
   } */
+  
   void manageWiFiEvent(WiFiEvent_t event);
 
-  /* Define SSID (Network name) and Password of the Wifi you want to connect.
+  * /* Define SSID (Network name) and Password of the Wifi you want to connect.
   It has to be called before Begin */
+  
   void configureWifi(String net, String pass);
 
   /* Transmit OSC data - a simple float value */
