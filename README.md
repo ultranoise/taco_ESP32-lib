@@ -33,7 +33,8 @@ Install: Move the folder “Taco” and all its contents to your Arduino librari
 
 Documentation (check the rest of Taco.h):
 
-  /* Basic Constructor with onboard led pin and hardreset pin */
+  * /* Basic Constructor with onboard led pin and hardreset pin */
+  
   Taco(int ledPin, int hardResetPin);
 
   /* Constructor with onboard led pin, hardreset pin and access point name */
