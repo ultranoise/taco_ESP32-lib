@@ -1,7 +1,7 @@
 # taco_ESP32-lib
 A first attempt to produce an Arduino library for ESP32 boards helping you out to transmit OSC data from sensors
 
-Why taco? --> TAngible music lab Core (Kunstuni Linz)
+Why taco? --> TAngible music lab Core (Kunstuni Linz) --> https://tamlab.ufg.at/
 
 Features (version 0.1):
 
