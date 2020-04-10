@@ -7,13 +7,13 @@ Features (version 0.1):
 
 * It transmits OSC data to all connected hosts
 
-* It can be configured as Access Point (AP) or connect to an existing Wifi (STA)
+* It can be configured as Access Point (AP) or it can connect to an existing Wifi (STA)
 
-* It incorporates an html server to configure it (try it with a browser)
+* It incorporates a html server to configure different other features (try it with your internet browser)
 
 * It saves configuration information to eeprom
 
-* It deals with add-ons like displays and I2C sensors (take a look at the templates)-
+* It deals with add-ons like OLED displays and I2C sensors (take a look at the templates)-
 
 Dependencies:
 
@@ -29,10 +29,10 @@ Dependencies:
 
 * <Adafruit_SSD1306.h>
 
-Download version 0.1: download or clone the contents of these repo.
+Download version 0.1: download or clone the contents of this repository.
 
 
-Install: Move the folder “Taco” and all its contents to your Arduino libraries folder. Check the included examples.
+Install: Move the folder “Taco” with all its contents to your Arduino libraries folder. Check the included examples.
 
 
 Documentation (check the rest of Taco.h):
