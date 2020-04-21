@@ -100,6 +100,8 @@ bool Taco::begin(int udpPort) {
   }
 
   //read configuration from eeprom in both AP (access point) or STA (Station network) modes
+  Serial.println();
+  Serial.println("Checking init settings");
   confSettings();
 
   //decide how to connect
@@ -723,6 +725,9 @@ void Taco::resetBoard(){
   Serial.println();
   Serial.println("writing original data in eeprom memory");
 
+  ///eeprom init
+  EEPROM.begin(EEPROM_SIZE);
+
     //clear eeprom
     for (int i = 0 ; i < EEPROM_SIZE ; i++) {
       EEPROM.write(i, 0);
@@ -756,7 +761,8 @@ String Taco::read_String(char add){
   int i;
   char data[100]; //Max 100 Bytes
   int len=0;
-  unsigned char k;
+  unsigned char k = 'a';
+  Serial.println("before read");
   k=EEPROM.read(add);
   while(k != '\0' && len<500)   //Read until null character
   {

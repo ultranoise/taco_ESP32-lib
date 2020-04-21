@@ -81,12 +81,17 @@ class Taco
     }
     void loop(){...}
 
+
+
+
     //Receive event from the network. We manage it with taco.
     void WiFiEvent(WiFiEvent_t event) {
       Serial.printf("**** kike: [WiFi-event] event: %d\n", event);
       taco.manageWiFiEvent(event);
     } */
     void manageWiFiEvent(WiFiEvent_t event);
+
+    void resetBoard();                          //reset board to access point mode
 
     /* Define SSID (Network name) and Password of the Wifi you want to connect.
     It has to be called before Begin */
@@ -165,7 +170,6 @@ class Taco
     void createAccessPoint();                   //creates the actual AP
     int connectToWiFi(String ssid, String pwd); //connect to wifi with ssid and passw
     void updateStations();                      //update the connected devices in this network
-    void resetBoard();                          //reset board to access point mode
     void writeStringMem(char add,String data);  //write string in eeprom with add as the address in eeprom
     String read_String(char add);               //read string from eeprom with add as the address in eeprom
     void confSettings();                        //read the board configuration from eeprom
