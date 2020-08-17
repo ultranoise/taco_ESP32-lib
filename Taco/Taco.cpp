@@ -42,7 +42,7 @@ Taco::Taco(int ledPin, int hardResetPin, const char *AP_name) {
   WiFiUDP udp;
 
   mode_clean = false;
-  mode_test = true;
+  mode_test = false;
 
   WebServer _server(80);
 
@@ -53,7 +53,7 @@ Taco::Taco(int ledPin, int hardResetPin, const char *AP_name) {
 bool Taco::begin(int udpPort) {
   Serial.println();
   Serial.println("/////////////////////////////////////////////////////");
-  Serial.println("Generic ESP32 solution");
+  Serial.println("Generic TACO for ESP32 solution");
   Serial.println("Tangible Music Lab 2019-2020 (enrique.tomas@ufg.at)");
   Serial.println("/////////////////////////////////////////////////////");
 
@@ -72,36 +72,42 @@ bool Taco::begin(int udpPort) {
   writeStringMem(130, APssid);
   if(new_ssid) {
     writeStringMem(20, network);
+    Serial.print("user ssid: ");
+    Serial.println(network);
     writeStringMem(86, password);
+    Serial.print("user passw: ");
+    Serial.println(password);
   }
+
+
 
 
   // First check hardreset pin
   // A hardreset pin at pin 15 will save us when a network configuration fails!!
   // It resets the board to access point, stores this mode in the eeprom and restarts
+  Serial.println("reading HARD_RESET pin");
   if(digitalRead(_hardResetPin) == LOW || mode_clean){
+    Serial.println("RESET pin is low OR Mode clean is active");
     if(!mode_test){  //FLAG TO DEBUG AND TEST WITHOUT HARDRESET PIN, USUALLY THIS IS FALSE
-    digitalWrite(_ledPin, LOW);
-    Serial.println();
-    Serial.println("HARD_RESET pin is low!! (CLEAR CONF & REBOOT)");
+      digitalWrite(_ledPin, LOW);
+      Serial.println();
+      Serial.println("HARD_RESET pin is low!! (CLEAR CONF & REBOOT)");
 
-    resetBoard();   // reset board, fix Access Point mode and save to EEPROM
+      resetBoard();   // reset board, fix Access Point mode and save to EEPROM
 
-    Serial.println("Rebooting in 2 secs...");
-    delay(2000);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(100);
-    ESP.restart();
+      Serial.println("Rebooting in 2 secs...");
+      delay(2000);
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(100);
+      ESP.restart();
     }
   }
   else {
     Serial.println();
-    Serial.println("HARD_RESET pin is high!! (OK)");
+    Serial.println("HARD_RESET pin is high!!");
   }
 
   //read configuration from eeprom in both AP (access point) or STA (Station network) modes
-  Serial.println();
-  Serial.println("Checking init settings");
   confSettings();
 
   //decide how to connect
@@ -114,7 +120,13 @@ bool Taco::begin(int udpPort) {
     createAccessPoint();
   } else {
     int devices_found = 0;
-    devices_found = connectToWiFi("TP-LINK_B9E2", "10173145"); //Connect to existing WLAN
+    network = read_String(20);
+    password = read_String(86);
+    Serial.print("user ssid: ");
+    Serial.println(network);
+    Serial.print("user passw: ");
+    Serial.println(password);
+    devices_found = connectToWiFi(network, password); //Connect to existing WLAN
     if (oled) {
       SSD1306_writeInt(120, 0, devices_found);    //inform about found devices on display
     }
@@ -247,6 +259,8 @@ void Taco::send(OSCMessage& msg, float value){
      ok = false;
 
       //OSC send
+
+      //Multicast Discovered Hosts
       for (int i = 0; i < nServices; ++i) {
         ok = true;
         //Ip address to transmit udp packages
@@ -254,6 +268,19 @@ void Taco::send(OSCMessage& msg, float value){
 
         //Debug.printf("input1: %s\n", String(inputVal).c_str()); // Note: if type is String need c_str()
         msg.add(value);  // some dummy data (milliseconds running this code)
+        udp.beginPacket(sta_clientAddress, _udpPort);
+        msg.send(udp);
+        udp.endPacket();
+        msg.empty();
+      }
+
+      //Extra hosts added with taco.addHost("host_name");
+      for (int i = 0; i < nExtraHosts; ++i) {
+        ok = true;
+        //Ip address to transmit udp packages
+        sta_clientAddress = extraHostAddress[i];
+
+        msg.add(value);
         udp.beginPacket(sta_clientAddress, _udpPort);
         msg.send(udp);
         udp.endPacket();
@@ -305,6 +332,25 @@ void Taco::send(OSCMessage& msg, float *arr, int size){
         udp.endPacket();
         msg.empty();
       }
+
+      //Extra hosts added with taco.addHost("host_name");
+      for (int i = 0; i < nExtraHosts; ++i) {
+        ok = true;
+        //Ip address to transmit udp packages
+        sta_clientAddress = extraHostAddress[i];
+
+        for(int j=0; j<=size-1;j++){ //add array contents
+          msg.add(arr[j]);  // some dummy data (milliseconds running this code)
+        }
+        udp.beginPacket(sta_clientAddress, _udpPort);
+        msg.send(udp);
+        udp.endPacket();
+        msg.empty();
+      }
+
+
+
+
     }
   }
 }
@@ -342,7 +388,6 @@ void Taco::send(OSCMessage& msg, float *arr, int size){
     Serial.print("AP IP address: ");
     Serial.println(myIP1);
     APconnected = true;
-
 }
 
 ///////////////////////////////////////////
@@ -402,6 +447,10 @@ int Taco::connectToWiFi(String ssid, String pwd){
 
   //setup mDNS for collecting the IPs of other machines in the network, only in STA Mode
   discoverMDNShosts();
+
+  //here is the place to find other hosts too
+ //addHost(kike); or you make it at Arduino level with taco.addHost("KIKE-ULTRANOISE")
+
 
   return nServices;
 }
@@ -600,7 +649,7 @@ void Taco::discoverMDNShosts(){
 
   if(accesspoint == false || user_STA){
     delay(2000);
-    if (!MDNS.begin("C2_MDNS")) {  //dummy name
+    if (!MDNS.begin("taco")) {  //dummy name
           Serial.println("Error setting up MDNS responder!");
          while(1){
               delay(1000);
@@ -611,13 +660,39 @@ void Taco::discoverMDNShosts(){
     //browse samba services to discover available devices
     browseService("smb", "tcp");
     delay(100);
-    /*
-      browseService("http", "tcp");
-      delay(100);
-      browseService("workstation", "tcp");
-      delay(100);
-    */
+    browseService("http", "tcp");
+    delay(100);
+    browseService("workstation", "tcp");
+    delay(100);
+    browseService("upnp", "tcp");
+    delay(100);
+    browseService("ssdp", "tcp");
+    delay(100);
+    browseService("ftp", "tcp");
+    delay(100);
+    browseService("uuid", "tcp");
+    delay(100);
+    browseService("printer", "tcp");
+
   }
+}
+
+void Taco::addHost(String host_name){
+  /// NEW STUFF
+  Serial.println("Browsing for host");
+  IPAddress serverIp = MDNS.queryHost(host_name);
+  while (serverIp.toString() == "0.0.0.0") {
+    Serial.println("Trying again to resolve mDNS");
+    delay(250);
+    serverIp = MDNS.queryHost(host_name);
+  }
+  Serial.print("IP address of server: ");
+  Serial.println(serverIp.toString());
+  Serial.println("Done finding the host...");
+  extraHostAddress[nExtraHosts] = serverIp;
+  nExtraHosts = nExtraHosts + 1;
+  //return serverIp.toString();
+
 }
 
 /////////////////////////////////////////////////////////////
@@ -725,9 +800,6 @@ void Taco::resetBoard(){
   Serial.println();
   Serial.println("writing original data in eeprom memory");
 
-  ///eeprom init
-  EEPROM.begin(EEPROM_SIZE);
-
     //clear eeprom
     for (int i = 0 ; i < EEPROM_SIZE ; i++) {
       EEPROM.write(i, 0);
@@ -761,8 +833,7 @@ String Taco::read_String(char add){
   int i;
   char data[100]; //Max 100 Bytes
   int len=0;
-  unsigned char k = 'a';
-  Serial.println("before read");
+  unsigned char k;
   k=EEPROM.read(add);
   while(k != '\0' && len<500)   //Read until null character
   {

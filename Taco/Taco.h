@@ -81,17 +81,12 @@ class Taco
     }
     void loop(){...}
 
-
-
-
     //Receive event from the network. We manage it with taco.
     void WiFiEvent(WiFiEvent_t event) {
       Serial.printf("**** kike: [WiFi-event] event: %d\n", event);
       taco.manageWiFiEvent(event);
     } */
     void manageWiFiEvent(WiFiEvent_t event);
-
-    void resetBoard();                          //reset board to access point mode
 
     /* Define SSID (Network name) and Password of the Wifi you want to connect.
     It has to be called before Begin */
@@ -116,7 +111,8 @@ class Taco
     int analog_pins[] = {35, 34, 33};
       ... setup() {
       ...   taco.def_analog_pins(analog_pins, 3);
-      ....} */    void def_analog_pins(int analog_pins[], int n_pins);
+      ....} */
+    void def_analog_pins(int analog_pins[], int n_pins);
 
     /* Read both lists of analog and digital pins. You should program something inside */
     void readPins();
@@ -165,11 +161,15 @@ class Taco
     */
     void handleRoot(WebServer& s);
 
+    //find host by name
+    void addHost(String host_name);
+
 
   private:
     void createAccessPoint();                   //creates the actual AP
     int connectToWiFi(String ssid, String pwd); //connect to wifi with ssid and passw
     void updateStations();                      //update the connected devices in this network
+    void resetBoard();                          //reset board to access point mode
     void writeStringMem(char add,String data);  //write string in eeprom with add as the address in eeprom
     String read_String(char add);               //read string from eeprom with add as the address in eeprom
     void confSettings();                        //read the board configuration from eeprom
@@ -239,6 +239,9 @@ class Taco
     IPAddress clientsAddress[10];       //ten clients can be connected in access point mode
     int numClients = 0;
 
+    int nExtraHosts = 0;                //number of extra hosts added
+    IPAddress extraHostAddress[10];     //ten extra hosts can be added
+
     //client ip address in STA-MODE
     IPAddress sta_clientAddress;
     int nServices = 0;            //mDNS services count: number of devices connected in Wifi Mode
@@ -248,6 +251,8 @@ class Taco
 
     //to know if there are oleds
     bool oled = false;
+
+
 
     /* html Style for adding to server actual HTML code */
     String style =
